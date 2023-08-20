@@ -8,8 +8,17 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-const authOptions : NextAuthOptions = {
+export const authOptions : NextAuthOptions = {
     adapter: PrismaAdapter(prisma),
+    secret: process.env.NEXTAUTH_SECRET,
+    callbacks: {
+        session: async ({ session, user }) => {
+            if (session?.user) {
+                session.user.id = user.id;
+            }
+            return session;
+        },
+    },
     providers: [
         GitHubProvider({
             clientId: process.env.GITHUB_ID as string,
