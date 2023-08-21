@@ -7,10 +7,11 @@ import { writeFile, unlink } from "fs/promises";
 import { PrismaVectorStore } from "langchain/vectorstores/prisma";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { PDFLoader } from "langchain/document_loaders/fs/pdf";
+import prisma from "@/prisma/prisma";
 
 
 
-const prisma = new PrismaClient();
+// const prisma = new PrismaClient();
 
 
 
@@ -80,7 +81,14 @@ export async function POST(request: NextRequest) {
                 } }))
         )
     );
-
+    
+    // Delete temp file from memory
+    try {
+        await unlink(filePath)   
+    } catch (error) {
+        console.log("Could not delete file.")
+    }
+    
     return NextResponse.json({ success: true }, { status: 200 })
 }
 
