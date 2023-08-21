@@ -1,24 +1,35 @@
-import { PrismaClient, Prisma, Document } from "@prisma/client";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/route";
+import { Prisma, Document } from "@prisma/client";
 import { NextRequest, NextResponse } from 'next/server'
 import { join } from "path";
 import { writeFile, unlink } from "fs/promises";
 import { PrismaVectorStore } from "langchain/vectorstores/prisma";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { PDFLoader } from "langchain/document_loaders/fs/pdf";
-import prisma from "@/prisma/prisma";
+import prisma from "@/util/prisma";
+import getSession from "@/util/getSession";
 
 
+export async function GET(request: NextRequest) {
+    // Validate session
+    const session = await getSession()
 
-// const prisma = new PrismaClient();
-
-
+    // Get all files that have the userId of the session
+    const response = await prisma.file.findMany({
+        select: {
+            id: true,
+            name: true,
+            created_at: true,
+        },
+        where: {
+            userId: session.user.id
+        }
+    })
+    return NextResponse.json({ data: response }, { status: 200 })
+}
 
 export async function POST(request: NextRequest) {
     // Validate session
-    const session = await getServerSession(authOptions);
-    if (!session) return NextResponse.json({ "data": "Unauthorized" }, { status: 401 })
+    const session = await getSession()
     
     // Validate file
     const data = await request.formData()
@@ -50,7 +61,6 @@ export async function POST(request: NextRequest) {
     const loader = new PDFLoader(filePath);
     const docs = await loader.load();
     const texts = docs.map(({ pageContent }) => pageContent.replace(/\n/g, ''));
-
 
     // Initialize vector store
     const embeddings = new OpenAIEmbeddings()
@@ -92,3 +102,28 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true }, { status: 200 })
 }
 
+export async function DELETE(request: NextRequest) {
+    // Validate session
+    const session = await getSession()
+    const file = await request.json()
+
+    // Delete the File's Documents first because they rely on File
+    const deleteDocuments = prisma.document.deleteMany({
+        where: {
+            fileId: file.id
+        }
+    })
+
+    // Delete the file sent in request
+    const deleteFile = prisma.file.delete({
+        where: {
+            id: file.id,
+            userId: session.user.id
+        }
+    })
+
+    // Run query as a transaction as both actions must be completed
+    const transaction = await prisma.$transaction([deleteDocuments, deleteFile])
+
+    return NextResponse.json({ success: true }, { status: 200 } )
+}
