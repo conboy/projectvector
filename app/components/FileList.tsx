@@ -21,13 +21,17 @@ export default function FileList() {
     console.log(files)
 
     const deleteFile = async (fileId : string) => {
-        const res = await fetch('api/files', { 
-            method: 'DELETE',
-            body: JSON.stringify({ id: fileId })
-        })
-        console.log(res)
-        // if (!res.ok) throw new Error("Failed to delete file")
-        return
+        try {
+            const res = await fetch('api/files', { 
+                method: 'DELETE',
+                body: JSON.stringify({ id: fileId })
+            })
+            if (!res.ok) throw new Error("Failed to delete file")
+            // Update the files state
+            setFiles(prevFiles => prevFiles.filter(file => file.id !== fileId));
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     return (
