@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
         console.log("Could not delete file.")
     }
     
-    return NextResponse.json({ success: true }, { status: 200 })
+    return NextResponse.json({ data: storedFile }, { status: 200 })
 }
 
 export async function DELETE(request: NextRequest) {

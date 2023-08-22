@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 
-export default function UploadFile() {
+export default function UploadFile({ files, error, setFiles, setError }) {
   const [file, setFile] = useState<File>()
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -19,6 +19,8 @@ export default function UploadFile() {
       })
       // handle the error
       if (!res.ok) throw new Error(await res.text())
+      const uploadedFile = await res.json()
+      setFiles((prevFiles) => [...prevFiles, uploadedFile.data]);
     } catch (e: any) {
       // Handle errors here
       console.error(e)

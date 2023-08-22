@@ -1,17 +1,9 @@
 'use client'
+import getFiles from '@/util/getFiles';
 import React, { useEffect, useState } from 'react'
 
-async function getFiles() {
-    const res = await fetch('api/files', { method: 'GET' })
-    if (!res.ok) throw new Error("Failed to get files")
-    return res.json()
-}
 
-
-
-export default function FileList() {
-    const [files, setFiles] = useState([])
-    const [error, setError] = useState(null); 
+export default function FileList({ files, error, setFiles, setError }) {
     
     useEffect(() => {
         getFiles()
