@@ -41,7 +41,6 @@ export default function ChatWindow({ chats, setChats, selectedFile, error, setEr
         })
     
         const response = await res.json()
-        console.log(response.data.content)
         
         // Add AI's answer to chat window history
         setChats((prevChats) => {
