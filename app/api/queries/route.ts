@@ -4,6 +4,7 @@ import prisma from "@/util/prisma";
 import { createEmbeddings } from "@/util/createEmbedding";
 import { LLMChain, OpenAI, PromptTemplate } from "langchain";
 
+// Handle user asking a question
 export async function POST(request: NextRequest) {
     // Validate session
     const session = await getSession()
@@ -23,7 +24,7 @@ export async function POST(request: NextRequest) {
     console.log(typeof embedding)
     
     try {
-        // Add message to database
+        // Add user's question to database
         const uploadedMessage = await prisma.message.create({
             data: {
                 content: data.message,
@@ -52,7 +53,18 @@ export async function POST(request: NextRequest) {
         const chain = new LLMChain({ llm: model, prompt });
         const answer = await chain.call({ documentContent: documentContent, question: data.message });
         console.log(answer.text)
-        return NextResponse.json({ answer: answer.text }, { status: 200 })
+
+        // Add AI's answer to database
+        const savedAnswer = await prisma.message.create({
+            data: {
+                content: answer.text,
+                userId: session.user.id,
+                fileId: data.fileId,
+                role: "AI",
+            }
+        })
+
+        return NextResponse.json({ data: savedAnswer }, { status: 200 })
 
     } catch (error) {
         console.log(error)
