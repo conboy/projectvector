@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 
-export default function UploadFile({ files, error, setFiles, setError }) {
-  const [file, setFile] = useState<File>()
+export default function UploadFile({ file, files, error, setFile, setFiles, setError }) {
+  
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()

@@ -3,14 +3,13 @@ import getFiles from '@/util/getFiles';
 import React, { useEffect, useState } from 'react'
 
 
-export default function FileList({ files, error, setFiles, setError }) {
+export default function FileList({ files, error, setSelectedFile, setFiles, setError }) {
     
     useEffect(() => {
         getFiles()
             .then(data => setFiles(data.data))
             .catch(err => setError(err.message));
     }, [])
-    console.log(files)
 
     const deleteFile = async (fileId : string) => {
         try {
@@ -35,6 +34,7 @@ export default function FileList({ files, error, setFiles, setError }) {
                     <p>Name: {file.name}</p>
                     <p>Created At: {new Date(file.created_at).toLocaleString()}</p>
                     <button onClick={() => deleteFile(file.id)}>Delete</button>
+                    <button onClick={() => setSelectedFile(file)}>Select</button>
                 </li>
             ))}
         </ul>

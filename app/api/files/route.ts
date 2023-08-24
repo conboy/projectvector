@@ -87,6 +87,11 @@ export async function POST(request: NextRequest) {
                         connect: {
                             id: storedFile.id
                         }
+                    },
+                    user: {
+                        connect: {
+                            id: session.user.id
+                        }
                     } 
                 } }))
         )

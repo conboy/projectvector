@@ -36,14 +36,16 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String     @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String?    @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
   files         File[]
+  documents     Document[]
+  messages      Message[]
 }
 
 model VerificationToken {
@@ -58,7 +60,7 @@ model File {
   id         String     @id @default(cuid())
   name       String
   created_at DateTime   @default(now())
-  user       User       @relation(fields: [userId], references: [id])
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     String
   documents  Document[]
   messages   Message[]
@@ -66,16 +68,25 @@ model File {
 
 model Document {
   id      String           @id @default(cuid())
+  fileId  String
+  userId  String
   content String
   vector  Unsupported("")?
-  file    File             @relation(fields: [fileId], references: [id])
-  fileId  String
+  file    File             @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  user    User             @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Message {
   id      Int    @id @default(autoincrement())
   content String
-  role    String
-  file    File   @relation(fields: [fileId], references: [id])
+  userId  String
   fileId  String
+  role    Role   @default(USER)
+  file    File   @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum Role {
+  USER
+  AI
 }
