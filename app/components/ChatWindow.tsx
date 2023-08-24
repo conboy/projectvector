@@ -16,7 +16,21 @@ export default function ChatWindow({ chats, setChats, selectedFile, error, setEr
     async function sendMessage(e: React.FormEvent<HTMLFormElement>, selectedFile: File, question: string) {
         e.preventDefault();
 
-        // setMessages(prevMessages => [...prevMessages, question])
+        setChats((prevChats) => {
+            // Get the last chat's ID
+            const lastChatId = prevChats.length > 0 ? prevChats[prevChats.length - 1].id : 0;
+
+            // Create a new chat object
+            const newChat = {
+                id: lastChatId + 1,
+                content: question,
+                role: 'USER'
+            };
+
+            // Return the updated chats array
+            return [...prevChats, newChat];
+        })
+        console.log(chats)
         
         const res = await fetch('api/queries', {
             method: 'POST',
@@ -31,6 +45,14 @@ export default function ChatWindow({ chats, setChats, selectedFile, error, setEr
     return (
         <>
             <h2>ChatWindow</h2>
+            {chats && chats.length > 0 ? (
+                <div>
+                    {chats.map((chat, index) => (
+                        <p key={index}>{chat.content}</p> 
+                    ))}
+                </div>
+            ) : null}
+
             {selectedFile && 
                 <form onSubmit={e => sendMessage(e, selectedFile, question)}>
                     <label>
@@ -41,14 +63,8 @@ export default function ChatWindow({ chats, setChats, selectedFile, error, setEr
                         />
                     </label>
                     <button type='submit'>Submit</button>
+
                     
-                    {chats && chats.length > 0 ? (
-                        <div>
-                            {chats.map((chat, index) => (
-                                <p key={index}>{chat.content}</p> 
-                            ))}
-                        </div>
-                    ) : null}
                 </form>
             }
 
