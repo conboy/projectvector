@@ -13,7 +13,7 @@ export default function Home() {
   const [selectedFile, setSelectedFile] = useState<File>()
   const [files, setFiles] = useState([])
   const [error, setError] = useState(null); 
-
+  const [chats, setChats] = useState([])
   
   const { data: session } = useSession()
   
@@ -24,13 +24,15 @@ export default function Home() {
       .catch(err => setError(err.message));
   }, [])
 
+  
+
   return (
     <main>
       <h1>Project Vector</h1>
       <User session={session}/>
       <UploadFile file={file} setFile={setFile} files={files} setFiles={setFiles} error={error} setError={setError} />
       <FileList files={files} setFiles={setFiles} setSelectedFile={setSelectedFile} error={error} setError={setError} />
-      <ChatWindow session={session} selectedFile={selectedFile}/>
+      <ChatWindow chats={chats} setChats={setChats} selectedFile={selectedFile} error={error} setError={setError} />
     </main>
   )
 }
