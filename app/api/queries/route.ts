@@ -4,6 +4,7 @@ import prisma from "@/util/prisma";
 import { createEmbeddings } from "@/util/createEmbedding";
 import { LLMChain, OpenAI, PromptTemplate } from "langchain";
 
+// Handle user asking a question
 export async function POST(request: NextRequest) {
     // Validate session
     const session = await getSession()

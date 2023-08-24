@@ -16,6 +16,7 @@ export default function ChatWindow({ chats, setChats, selectedFile, error, setEr
     async function sendMessage(e: React.FormEvent<HTMLFormElement>, selectedFile: File, question: string) {
         e.preventDefault();
 
+        // Add new chat to chat window history
         setChats((prevChats) => {
             // Get the last chat's ID
             const lastChatId = prevChats.length > 0 ? prevChats[prevChats.length - 1].id : 0;
@@ -30,7 +31,6 @@ export default function ChatWindow({ chats, setChats, selectedFile, error, setEr
             // Return the updated chats array
             return [...prevChats, newChat];
         })
-        console.log(chats)
         
         const res = await fetch('api/queries', {
             method: 'POST',
@@ -39,7 +39,25 @@ export default function ChatWindow({ chats, setChats, selectedFile, error, setEr
                 message: question,
             })
         })
-        console.log(res)
+
+        const response = await res.json()
+        
+        // Add AI's answer to chat window history
+        setChats((prevChats) => {
+            // Get the last chat's ID
+            const lastChatId = prevChats.length > 0 ? prevChats[prevChats.length - 1].id : 0;
+
+            // Create a new chat object
+            const newChat = {
+                id: lastChatId + 1,
+                content: response.answer,
+                role: 'AI'
+            };
+
+            // Return the updated chats array
+            return [...prevChats, newChat];
+        })
+        
     }
 
     return (
