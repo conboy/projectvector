@@ -28,10 +28,10 @@ export default function Home() {
 
   return (
     <main>
-      <h1>Project Vector</h1>
+      <h1 className="">Project Vector</h1>
       <User session={session}/>
       <UploadFile file={file} setFile={setFile} files={files} setFiles={setFiles} error={error} setError={setError} />
-      <FileList files={files} setFiles={setFiles} setSelectedFile={setSelectedFile} error={error} setError={setError} />
+      <FileList files={files} setFiles={setFiles} selectedFile={selectedFile} setSelectedFile={setSelectedFile} error={error} setError={setError} />
       <ChatWindow chats={chats} setChats={setChats} selectedFile={selectedFile} error={error} setError={setError} />
     </main>
   )

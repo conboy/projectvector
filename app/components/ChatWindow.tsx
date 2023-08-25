@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 
 export default function ChatWindow({ chats, setChats, selectedFile, error, setError }) {
     const [question, setQuestion] = useState('')
+    const [isLoading, setIsLoading] = useState(false)
     
     // Load chat messages when user selects a file
     useEffect(() => {
@@ -15,7 +16,8 @@ export default function ChatWindow({ chats, setChats, selectedFile, error, setEr
 
     async function sendChat(e: React.FormEvent<HTMLFormElement>, selectedFile: File, question: string) {
         e.preventDefault();
-    
+        // Show user that answer is loading
+        setIsLoading(true)
         // Add new chat to chat window history
         setChats((prevChats) => {
             // Get the last chat's ID
@@ -41,6 +43,8 @@ export default function ChatWindow({ chats, setChats, selectedFile, error, setEr
         })
     
         const response = await res.json()
+        // Show user that answer is done loading
+        setIsLoading(false)
         
         // Add AI's answer to chat window history
         setChats((prevChats) => {
@@ -66,14 +70,25 @@ export default function ChatWindow({ chats, setChats, selectedFile, error, setEr
         <>
             <h2>ChatWindow</h2>
             {chats && chats.length > 0 ? (
-                <div>
+                <div className='chat-window'>
+                     
                     {chats.map((chat, index) => (
-                        <p key={index}>{chat.content}</p> 
+                        <div key={index} className={chat.role === "USER" ? "chat chat-end" : "chat chat-start"}>
+                            <div className="chat-bubble">{chat.content}</div>
+                        </div>
                     ))}
+                    {isLoading ? 
+                        <div className="chat chat-start">
+                            <div className="chat-bubble">
+                                <span className="loading loading-dots loading-md"></span>
+                            </div>
+                        </div> 
+                    : null }
                 </div>
             ) : null}
 
             {selectedFile && 
+                <>
                 <form onSubmit={e => sendChat(e, selectedFile, question)}>
                     <label>
                         {selectedFile.name}
@@ -86,6 +101,11 @@ export default function ChatWindow({ chats, setChats, selectedFile, error, setEr
 
                     
                 </form>
+                <div className="join">
+                    <input className="input input-bordered join-item" placeholder="Send a message"/>
+                    <button className="btn join-item">Send</button>
+                </div>
+                </>
             }
 
         </>

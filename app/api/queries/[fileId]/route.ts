@@ -3,7 +3,7 @@ import prisma from "@/util/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
 // GET all messages of selected file
-export async function GET(request: NextRequest, context: { params }) {
+export async function GET(request: NextRequest, context: { params: { fileId: string; } }) {
     // Validate session
     const session = await getSession()
 
