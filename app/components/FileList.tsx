@@ -26,11 +26,12 @@ export default function FileList({ files, error, selectedFile, setSelectedFile, 
     }
 
     return (
-        <div>
-            <h1>File List:</h1>
-            <ul className="menu w-56 menu-lg">
+            <>
+            
+            <ul className="menu w-56 inline-block">
                 {files.map(file => (
                     <li 
+                        className="w-56"
                         key={file.id} 
                         onClick={() => setSelectedFile(file)}
                     >
@@ -51,6 +52,6 @@ export default function FileList({ files, error, selectedFile, setSelectedFile, 
                     </li>
                 ))}
             </ul>
-        </div>
+            </>
     )
 }

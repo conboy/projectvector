@@ -1,9 +1,9 @@
 import getChatHistory from '@/util/getChatHistory';
 import React, { useEffect, useState } from 'react'
 
-export default function ChatWindow({ chats, setChats, selectedFile, error, setError }) {
-    const [question, setQuestion] = useState('')
-    const [isLoading, setIsLoading] = useState(false)
+export default function ChatWindow({ chats, setChats, selectedFile, error, setError, isLoading }) {
+    
+    
     
     // Load chat messages when user selects a file
     useEffect(() => {
@@ -14,63 +14,12 @@ export default function ChatWindow({ chats, setChats, selectedFile, error, setEr
         }
     }, [selectedFile]);
 
-    async function sendChat(e: React.FormEvent<HTMLFormElement>, selectedFile: File, question: string) {
-        e.preventDefault();
-        // Show user that answer is loading
-        setIsLoading(true)
-        // Add new chat to chat window history
-        setChats((prevChats) => {
-            // Get the last chat's ID
-            const lastChatId = prevChats.length > 0 ? prevChats[prevChats.length - 1].id : 0;
     
-            // Create a new chat object
-            const newChat = {
-                id: lastChatId + 1,
-                content: question,
-                role: 'USER'
-            };
-    
-            // Return the updated chats array
-            return [...prevChats, newChat];
-        })
-        
-        const res = await fetch('api/queries', {
-            method: 'POST',
-            body: JSON.stringify({
-                fileId: selectedFile.id,
-                message: question,
-            })
-        })
-    
-        const response = await res.json()
-        // Show user that answer is done loading
-        setIsLoading(false)
-        
-        // Add AI's answer to chat window history
-        setChats((prevChats) => {
-            // Get the last chat's ID
-            const lastChatId = prevChats.length > 0 ? prevChats[prevChats.length - 1].id : 0;
-    
-            // Create a new chat object
-            const newChat = {
-                id: lastChatId + 1,
-                content: response.data.content,
-                role: 'AI'
-            };
-
-            console.log("AI SAID ", newChat)
-    
-            // Return the updated chats array
-            return [...prevChats, newChat];
-        })
-        console.log(chats)
-    }
 
     return (
         <>
-            <h2>ChatWindow</h2>
             {chats && chats.length > 0 ? (
-                <div className='chat-window'>
+                <div className="h-screen ">
                      
                     {chats.map((chat, index) => (
                         <div key={index} className={chat.role === "USER" ? "chat chat-end" : "chat chat-start"}>
@@ -87,26 +36,7 @@ export default function ChatWindow({ chats, setChats, selectedFile, error, setEr
                 </div>
             ) : null}
 
-            {selectedFile && 
-                <>
-                <form onSubmit={e => sendChat(e, selectedFile, question)}>
-                    <label>
-                        {selectedFile.name}
-                        <textarea
-                            value={question}
-                            onChange={e => setQuestion(e.target.value)}
-                        />
-                    </label>
-                    <button type='submit'>Submit</button>
-
-                    
-                </form>
-                <div className="join">
-                    <input className="input input-bordered join-item" placeholder="Send a message"/>
-                    <button className="btn join-item">Send</button>
-                </div>
-                </>
-            }
+            
 
         </>
   )

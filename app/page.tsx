@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import getFiles from "@/util/getFiles";
 import ChatWindow from "./components/ChatWindow";
 import { useSession } from "next-auth/react";
+import Navbar from "./components/Navbar";
+import ChatInput from "./components/ChatInput";
 
 export default function Home() {
   const [file, setFile] = useState<File>()
@@ -14,6 +16,8 @@ export default function Home() {
   const [files, setFiles] = useState([])
   const [error, setError] = useState(null); 
   const [chats, setChats] = useState([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [question, setQuestion] = useState('')
   
   const { data: session } = useSession()
   
@@ -28,11 +32,28 @@ export default function Home() {
 
   return (
     <main>
-      <h1 className="">Project Vector</h1>
-      <User session={session}/>
-      <UploadFile file={file} setFile={setFile} files={files} setFiles={setFiles} error={error} setError={setError} />
-      <FileList files={files} setFiles={setFiles} selectedFile={selectedFile} setSelectedFile={setSelectedFile} error={error} setError={setError} />
-      <ChatWindow chats={chats} setChats={setChats} selectedFile={selectedFile} error={error} setError={setError} />
+      <Navbar />
+      <div className="flex flex-row">
+          {/* <User session={session}/>
+          <UploadFile file={file} setFile={setFile} files={files} setFiles={setFiles} error={error} setError={setError} /> */}
+          <div>
+            <FileList files={files} setFiles={setFiles} selectedFile={selectedFile} setSelectedFile={setSelectedFile} error={error} setError={setError} />
+          </div>
+          <div className="grow">
+            <ChatWindow chats={chats} setChats={setChats} selectedFile={selectedFile} error={error} setError={setError} isLoading={isLoading} setIsLoading={setIsLoading}/>
+          </div>
+          {/* <ChatInput 
+            chats={chats} 
+            setChats={setChats} 
+            selectedFile={selectedFile} 
+            error={error} 
+            setError={setError} 
+            isLoading={isLoading} 
+            setIsLoading={setIsLoading} 
+            question={question} 
+            setQuestion={setQuestion} 
+          /> */}
+      </div>
     </main>
   )
 }
